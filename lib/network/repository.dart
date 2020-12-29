@@ -2,17 +2,16 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:unsplash_sample/key.dart';
 import 'package:unsplash_sample/network/i_client.dart';
 import 'package:unsplash_sample/network/service_response.dart';
 
 
 
-class PhotoReceiveRepository extends IClient{
+class PhotoRestApi extends IClient{
 
   @override
-  Future<MappedNetworkServiceResponse<T>> getAsync<T>(int page) async {
-    Response response = await Dio().get("https://api.unsplash.com/photos/?client_id=${ApiKey.CLIENT_ID}&page=$page");
+  Future<MappedNetworkServiceResponse<T>> getAsync<T>(String url) async {
+    Response response = await Dio().get(url);
     return await processResponse<T>(response);
   }
 
@@ -22,7 +21,7 @@ class PhotoReceiveRepository extends IClient{
       if (!((response.statusCode < HttpStatus.ok) ||
           (response.statusCode >= HttpStatus.multipleChoices) ||
           (response.data == null))) { //response.data instead of response.body
-        //var resultClass = await compute(jsonParserIsolate, response.data);
+        var resultClass = await compute(jsonParserIsolate, response.data);
 
         return MappedNetworkServiceResponse<T>(
             mappedResult: resultClass,
@@ -44,7 +43,7 @@ class PhotoReceiveRepository extends IClient{
     }
   }
 
-  static Map<String, dynamic> jsonParserIsolate(String res) {
+  static Future<Map<String, dynamic>> jsonParserIsolate(dynamic res) async {
     return jsonDecode(res);
   }
 

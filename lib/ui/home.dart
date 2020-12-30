@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unsplash_sample/bloc/image_list/image_list_bloc.dart';
 import 'package:unsplash_sample/bloc/image_list/index.dart';
+import 'package:unsplash_sample/bloc/search_image/index.dart';
 import 'package:unsplash_sample/model/photo_model.dart';
+import 'package:unsplash_sample/ui/bookmarks.dart';
 import 'package:unsplash_sample/ui/search_image.dart';
 import 'package:unsplash_sample/ui/image_info.dart';
+import 'package:hive/hive.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -15,11 +18,13 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final _bloc = ImageListBloc();
   final _scrollController = ScrollController();
+  final _searchBloc = SearchImageBloc();
 
-  final _scrollThreshold = 200.0;
+
 
   @override
   void initState() {
+    Hive.openBox('images');
     _bloc.add(ImageFetched(0));
     super.initState();
   }
@@ -37,75 +42,24 @@ class _HomeState extends State<Home> {
             ],
           ),
           title: Text('Unsplash demo'),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () async {
+                Photo selected = await showSearch<Photo>(
+                  context: context,
+                  delegate: ImageSearch(_searchBloc),
+                );
+              },
+            )
+          ],
         ),
         body: TabBarView(
           children: [
             //infinite list view
-            BlocBuilder<ImageListBloc, ImageListState>(
-              cubit: _bloc,
-              builder: (buildContext, state) {
-                if (state is ImageError)
-                  return Center(
-                    child: Text("error"),
-                  );
-                if (state is InitialPhotoListState)
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                if (state is ImageLoaded) {
-                  print(state.photos.length);
-                  return ListView.builder(
-                      itemCount: state.photos.length + 1,
-                      controller: _scrollController,
-                      itemBuilder: (buildContext, index) {
-                        _scrollController.addListener((){
-                          final maxScroll = _scrollController.position.maxScrollExtent;
-                          final currentScroll = _scrollController.position.pixels;
-                          if (maxScroll - currentScroll <= _scrollThreshold && !_bloc.isFetching && index == state.photos.length) {
-                            if(_bloc.state is ImageLoaded){
-                              _bloc.add(ImageFetched((_bloc.state as ImageLoaded).page + 1));
-                            }
-                          }
-                        });
 
-                        if (index >= state.photos.length) return CircularProgressIndicator();
-                        Photo item = state.photos[index];
-                        double displayWidth = MediaQuery.of(context).size.width;
-                        double finalHeight =
-                            displayWidth / (item.width / item.height);
-
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => ImageInfoScreen(item.user.firstName, item.urls.regular)
-                            ));
-                          },
-                          child: Hero(
-                            tag: "photo${item.id}",
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Card(
-                                child: CachedNetworkImage(
-                                  imageUrl: item.urls.regular,
-                                  fit: BoxFit.fill,
-                                  width: displayWidth,
-                                  height: finalHeight,
-                                  placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                                  errorWidget: (context, url, error) => Icon(Icons.error),
-                                  placeholderFadeInDuration: Duration(seconds: 0),
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      });
-                }
-
-                return Center(child: Text(""));
-              },
-            ),
             //bookmarks
-            SearchPage(),
+            Bookmarks(),
           ],
         ),
       ),

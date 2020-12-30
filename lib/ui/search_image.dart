@@ -6,137 +6,12 @@ import 'package:unsplash_sample/bloc/search_image/search_image_bloc.dart';
 import 'package:unsplash_sample/model/photo_model.dart';
 import 'package:unsplash_sample/ui/image_info.dart';
 
-/*
-class BookmarkedImages extends StatefulWidget {
-  final String query;
-  BookmarkedImages(this.query);
-
-  @override
-  _BookmarkedImagesState createState() => _BookmarkedImagesState();
-}
-
-class _BookmarkedImagesState extends State<BookmarkedImages> {
-  final _bloc = SearchImageListBloc();
-  final _scrollController = ScrollController();
-
-  final _scrollThreshold = 200.0;
-
-  @override
-  void initState() {
-    _bloc.add(SearchedImage(0, widget.query));
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<SearchImageListBloc, SearchImageListState>(
-      cubit: _bloc,
-      builder: (buildContext, state) {
-        if (state is SearchImageError)
-          return Center(
-            child: Text("error"),
-          );
-        if (state is SearchInitialPhotoListState)
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        if (state is SearchImageLoaded) {
-          print(state.photos.length);
-          return ListView.builder(
-              itemCount: state.photos.length + 1,
-              controller: _scrollController,
-              itemBuilder: (buildContext, index) {
-                _scrollController.addListener((){
-                  final maxScroll = _scrollController.position.maxScrollExtent;
-                  final currentScroll = _scrollController.position.pixels;
-                  if (maxScroll - currentScroll <= _scrollThreshold && !_bloc.isFetching && index == state.photos.length) {
-                    if(_bloc.state is SearchImageLoaded){
-                      _bloc.add(SearchedImage((_bloc.state as SearchImageLoaded).page + 1, widget.query), );
-                    }
-                  }
-                });
-
-                if (index >= state.photos.length) return CircularProgressIndicator();
-                Photo item = state.photos[index];
-                double displayWidth = MediaQuery.of(context).size.width;
-                double finalHeight =
-                    displayWidth / (item.width / item.height);
-
-                return InkWell(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => ImageInfoScreen(item.user.firstName, item.urls.regular)
-                    ));
-                  },
-                  child: Hero(
-                    tag: "photo${item.id}",
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: CachedNetworkImage(
-                          imageUrl: item.urls.regular,
-                          fit: BoxFit.fill,
-                          width: displayWidth,
-                          height: finalHeight,
-                          placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                          errorWidget: (context, url, error) => Icon(Icons.error),
-                          placeholderFadeInDuration: Duration(seconds: 0),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              });
-        }
-
-        return Center(child: Text(""));
-      },
-    );
-  }
-}
-*/
-
-
-class SearchPage extends StatefulWidget {
-  @override
-  _SearchPageState createState() => _SearchPageState();
-}
-
-class _SearchPageState extends State<SearchPage> {
-  final _bloc = ImageBloc();
-  @override
-  void initState() {
-    _bloc.add(ImageSearchEvent(0, 'Jimmy'));
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Search Delegate'),
-      ),
-      body: Container(
-        child: Center(
-          child: RaisedButton(
-            child: Text('Show search'),
-            onPressed: () async {
-              Photo selected = await showSearch<Photo>(
-                context: context,
-                delegate: ImageSearch(_bloc),
-              );
-              print(selected);
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class ImageSearch extends SearchDelegate<Photo> {
   final _bloc;
 
+  final _scrollController = ScrollController();
+
+  final _scrollThreshold = 200.0;
   ImageSearch(this._bloc);
 
   @override
@@ -154,10 +29,10 @@ class ImageSearch extends SearchDelegate<Photo> {
 
   @override
   Widget buildResults(BuildContext context) {
-    _bloc.add(ImageSearchEvent(0, query));
+    _bloc.add(DiscoverImageSearchEvent(0, query));
 
     print(query);
-    return BlocBuilder<ImageBloc, SearchImageListState>(
+    return BlocBuilder<SearchImageBloc, SearchImageListState>(
       cubit: _bloc,
       builder: (BuildContext context, SearchImageListState state) {
         if (state is SearchImageError) {
@@ -167,19 +42,50 @@ class ImageSearch extends SearchDelegate<Photo> {
         }
         if(state is SearchImageLoaded){
           return ListView.builder(
-            itemBuilder: (context, index) {
+            itemCount: state.photos.length + 1,
+            controller: _scrollController,
+            itemBuilder: (buildContext, index) {
+              _scrollController.addListener((){
+                final maxScroll = _scrollController.position.maxScrollExtent;
+                final currentScroll = _scrollController.position.pixels;
+                if (maxScroll - currentScroll <= _scrollThreshold && !_bloc.isFetching && index == state.photos.length) {
+                  if(_bloc.state is SearchImageLoaded){
+                    _bloc.add(SearchImagePaginationEvent(query));
+                  }
+                }
+              });
+
+              if (index >= state.photos.length) return CircularProgressIndicator();
               Photo item = state.photos[index];
-              return ListTile(
-                leading: Icon(Icons.add),
-                title: Text(state.photos[index].user.firstName),
-                onTap: (){
+              double displayWidth = MediaQuery.of(context).size.width;
+              double finalHeight =
+                  displayWidth / (item.width / item.height);
+
+              return InkWell(
+                onTap: () {
                   Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => ImageInfoScreen(item.user.firstName, item.urls.regular)
+                      builder: (context) => ImageInfoScreen(item.user.firstName, item.urls.regular, item.id)
                   ));
                 },
+                child: Hero(
+                  tag: "photo${item.id}",
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Card(
+                      child: CachedNetworkImage(
+                        imageUrl: item.urls.regular,
+                        fit: BoxFit.fill,
+                        width: displayWidth,
+                        height: finalHeight,
+                        placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        placeholderFadeInDuration: Duration(seconds: 0),
+                      ),
+                    ),
+                  ),
+                ),
               );
             },
-            itemCount: state.photos.length,
           );
         }
         return Text("0");
@@ -188,5 +94,9 @@ class ImageSearch extends SearchDelegate<Photo> {
   }
 
   @override
-  Widget buildSuggestions(BuildContext context) => Container();
+  Widget buildSuggestions(BuildContext context){
+    return Center(
+      child: Text("Search for $query"),
+    );
+  }
 }

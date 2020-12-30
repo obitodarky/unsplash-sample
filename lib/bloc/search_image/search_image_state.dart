@@ -6,6 +6,10 @@ abstract class SearchImageListState {
 
 class SearchImageError extends SearchImageListState {}
 
+class SearchImageInitialState extends SearchImageListState{}
+
+class SearchImagePagination extends SearchImageListState{}
+
 class SearchImageLoaded extends SearchImageListState{
   final List<Photo> photos;
   final int page;

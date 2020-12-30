@@ -1,6 +1,6 @@
 import 'package:unsplash_sample/model/photo_model.dart';
 import 'package:unsplash_sample/network/i_client.dart';
-import 'package:unsplash_sample/network/repository.dart';
+import 'package:unsplash_sample/network/rest_api_client.dart';
 import 'package:unsplash_sample/utils/urls.dart';
 
 abstract class ApiMethods {
@@ -12,7 +12,7 @@ class GetImageList extends ApiMethods{
   IClient _iClient;
 
   GetImageList(){
-    _iClient = PhotoRestApi();
+    _iClient = RestApi();
   }
 
   @override

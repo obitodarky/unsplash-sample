@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:unsplash_sample/model/service_response.dart';
 import 'package:unsplash_sample/network/i_client.dart';
-import 'package:unsplash_sample/network/service_response.dart';
 
 
 
-class PhotoRestApi extends IClient{
+class RestApi extends IClient{
 
   @override
   Future<MappedNetworkServiceResponse<T>> getAsync<T>(String url, Map<String, dynamic> queryParams) async {

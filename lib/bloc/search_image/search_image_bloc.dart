@@ -2,10 +2,10 @@ import 'package:bloc/bloc.dart';
 import 'package:unsplash_sample/bloc/search_image/index.dart';
 import 'package:unsplash_sample/model/photo_model.dart';
 
-class ImageBloc extends Bloc<ImageSearchEvent, SearchImageListState> {
+class SearchImageBloc extends Bloc<ImageSearchEvent, SearchImageListState> {
   bool isFetching;
 
-  ImageBloc({SearchImageListState initialState}) : super(initialState);
+  SearchImageBloc({SearchImageListState initialState}) : super(initialState);
 
 
   @override

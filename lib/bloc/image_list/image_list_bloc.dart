@@ -3,6 +3,7 @@ import 'package:unsplash_sample/bloc/image_list/image_list_event.dart';
 import 'package:unsplash_sample/bloc/image_list/image_list_state.dart';
 
 class ImageListBloc extends Bloc<ImageEvent, ImageListState> {
+  bool isFetching;
   ImageListBloc({ImageListState initialState}) : super(initialState);
 
 
@@ -10,7 +11,6 @@ class ImageListBloc extends Bloc<ImageEvent, ImageListState> {
 
   @override
   Stream<ImageListState> mapEventToState(ImageEvent event) async* {
-    yield InitialPhotoListState();
     try{
       yield await event.applyAsync(currentState: state, bloc: this);
     } catch (error, stacktrace){

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unsplash_sample/bloc/image_list/image_list_bloc.dart';
@@ -17,8 +18,7 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    _scrollController.addListener(_onScroll);
-    _bloc.add(ImageFetched(1));
+    _bloc.add(ImageFetched(0));
     super.initState();
   }
 
@@ -56,6 +56,16 @@ class _HomeState extends State<Home> {
                       itemCount: state.photos.length + 1,
                       controller: _scrollController,
                       itemBuilder: (buildContext, index) {
+                        _scrollController.addListener((){
+                          final maxScroll = _scrollController.position.maxScrollExtent;
+                          final currentScroll = _scrollController.position.pixels;
+                          if (maxScroll - currentScroll <= _scrollThreshold && !_bloc.isFetching && index == state.photos.length) {
+                            if(_bloc.state is ImageLoaded){
+                              _bloc.add(ImageFetched((_bloc.state as ImageLoaded).page + 1));
+                            }
+                          }
+                        });
+
                         if (index >= state.photos.length) return CircularProgressIndicator();
                         Photo item = state.photos[index];
                         double displayWidth = MediaQuery.of(context).size.width;
@@ -70,11 +80,14 @@ class _HomeState extends State<Home> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Card(
-                                child: Image.network(
-                                  item.urls.regular,
+                                child: CachedNetworkImage(
+                                  imageUrl: item.urls.regular,
                                   fit: BoxFit.fill,
                                   width: displayWidth,
                                   height: finalHeight,
+                                  placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                                  errorWidget: (context, url, error) => Icon(Icons.error),
+                                  placeholderFadeInDuration: Duration(seconds: 0),
                                 ),
                               ),
                             ),
@@ -92,14 +105,5 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
-  }
-  void _onScroll() {
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.position.pixels;
-    if (maxScroll - currentScroll <= _scrollThreshold) {
-      if(_bloc.state is ImageLoaded){
-        _bloc.add(ImageFetched((_bloc.state as ImageLoaded).page + 1));
-      }
-    }
   }
 }

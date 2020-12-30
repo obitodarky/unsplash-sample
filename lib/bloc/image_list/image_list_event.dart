@@ -16,13 +16,18 @@ class ImageFetched extends ImageEvent {
 
   @override
   Future<ImageListState> applyAsync({ImageListState currentState, ImageListBloc bloc}) async {
+    bloc.isFetching = true;
     int _page = 0;
+    List<Photo> imageListData  = [];
     if(currentState is ImageLoaded){
       _page = currentState.page + 1;
+      imageListData = currentState.photos;
     }
     try{
-      List<Photo> imageListData = await _apiMethods.getResponseFromUrl(ApiKey.CLIENT_ID, page);
-      return ImageLoaded(imageListData, page);
+      List<Photo> tempImageListData = await _apiMethods.getResponseFromUrl(ApiKey.CLIENT_ID, _page);
+      imageListData.addAll(tempImageListData);
+      bloc.isFetching = false;
+      return ImageLoaded(imageListData, _page);
     } catch(error,stacktrace) {
       print("$error $stacktrace");
       return ImageError();

@@ -38,7 +38,6 @@ class _DiscoverImagesState extends State<DiscoverImages> {
             child: CircularProgressIndicator(),
           );
         if (state is ImageLoaded) {
-          print(state.photos.length);
           return ListView.builder(
               itemCount: state.photos.length + 1,
               controller: _scrollController,

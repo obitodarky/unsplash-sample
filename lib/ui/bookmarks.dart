@@ -7,7 +7,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 class Bookmarks extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    print("goes here");
     return _imageListView();
   }
 

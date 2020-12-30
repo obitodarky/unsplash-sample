@@ -31,7 +31,6 @@ class ImageInfoScreen extends StatelessWidget {
                 onPressed: (){
 
                   if(box.values.contains(newBookmark)){
-                    print(box.keys);
                     bookmarkBox.deleteAt(bookmarkBox.values.toList().indexWhere((element) => element == newBookmark));
                     return;
                   }

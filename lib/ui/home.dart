@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unsplash_sample/bloc/image_list/image_list_bloc.dart';
 import 'package:unsplash_sample/bloc/image_list/index.dart';
 import 'package:unsplash_sample/model/photo_model.dart';
+import 'package:unsplash_sample/ui/search_image.dart';
 import 'package:unsplash_sample/ui/image_info.dart';
 
 class Home extends StatefulWidget {
@@ -104,7 +105,7 @@ class _HomeState extends State<Home> {
               },
             ),
             //bookmarks
-            Container(color: Colors.purple),
+            SearchPage(),
           ],
         ),
       ),

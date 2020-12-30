@@ -67,25 +67,16 @@ class _HomeState extends State<Home> {
                           },
                           child: Hero(
                             tag: "photo${item.id}",
-                            child: Stack(
-                              children: <Widget>[
-                                SizedBox(
-                                  width: displayWidth,
-                                  height: finalHeight,
-                                ),
-                                Image.network(
-                                  item.urls.thumb,
-                                  fit: BoxFit.fitWidth,
-                                  width: displayWidth,
-                                  height: finalHeight,
-                                ),
-                                Image.network(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Card(
+                                child: Image.network(
                                   item.urls.regular,
-                                  fit: BoxFit.fitWidth,
+                                  fit: BoxFit.fill,
                                   width: displayWidth,
                                   height: finalHeight,
                                 ),
-                              ],
+                              ),
                             ),
                           ),
                         );

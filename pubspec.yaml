@@ -30,6 +30,10 @@ dependencies:
   cupertino_icons: ^1.0.1
   flutter_staggered_grid_view:
   dio:
+  bloc:
+  equatable:
+  flutter_bloc:
+  cached_network_image:
 
 dev_dependencies:
   flutter_test:

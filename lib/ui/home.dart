@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unsplash_sample/bloc/image_list/image_list_bloc.dart';
 import 'package:unsplash_sample/bloc/image_list/index.dart';
 import 'package:unsplash_sample/model/photo_model.dart';
+import 'package:unsplash_sample/ui/image_info.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -74,6 +75,9 @@ class _HomeState extends State<Home> {
 
                         return InkWell(
                           onTap: () {
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => ImageInfoScreen(item.user.firstName, item.urls.regular)
+                            ));
                           },
                           child: Hero(
                             tag: "photo${item.id}",

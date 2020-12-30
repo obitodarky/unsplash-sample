@@ -54,14 +54,14 @@ class ImageSearch extends SearchDelegate<Photo> {
                 }
               });
 
-              if (index >= state.photos.length) return CircularProgressIndicator();
+              if (index >= state.photos.length) return Center(child: CircularProgressIndicator());
               Photo item = state.photos[index];
 
               return CardImage(item);
             },
           );
         }
-        return Text("0");
+        return Center(child: CircularProgressIndicator());
       },
     );
   }

@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:unsplash_sample/bloc/search_image/index.dart';
-import 'package:unsplash_sample/model/photo_model.dart';
+
 
 class SearchImageBloc extends Bloc<ImageSearchEvent, SearchImageListState> {
   bool isFetching;

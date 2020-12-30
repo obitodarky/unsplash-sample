@@ -1,7 +1,6 @@
 import 'package:unsplash_sample/model/photo_model.dart';
 import 'package:unsplash_sample/network/i_client.dart';
 import 'package:unsplash_sample/network/rest_api_client.dart';
-import 'package:unsplash_sample/utils/urls.dart';
 
 abstract class ApiMethods {
   Future<List<Photo>> getResponseFromUrl(String url, Map<String, dynamic> queryParams);

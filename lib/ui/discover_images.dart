@@ -1,10 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:unsplash_sample/bloc/image_list/index.dart';
 import 'package:unsplash_sample/model/photo_model.dart';
-import 'package:unsplash_sample/ui/image_info.dart';
 import 'package:unsplash_sample/widgets/card_image.dart';
 
 class DiscoverImages extends StatefulWidget {

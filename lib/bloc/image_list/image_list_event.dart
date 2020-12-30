@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:unsplash_sample/bloc/image_list/image_list_state.dart';
 import 'package:unsplash_sample/bloc/image_list/image_list_bloc.dart';
 import 'package:unsplash_sample/key.dart';

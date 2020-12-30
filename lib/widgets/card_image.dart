@@ -1,10 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:unsplash_sample/model/bookmark_images.dart';
 import 'package:unsplash_sample/model/photo_model.dart';
 import 'package:unsplash_sample/ui/image_info.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:unsplash_sample/widgets/bookmark_icon.dart';
 
 class CardImage extends StatelessWidget {

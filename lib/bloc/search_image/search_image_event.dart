@@ -1,4 +1,3 @@
-import 'package:unsplash_sample/bloc/search_image/search_image_bloc.dart';
 import 'package:unsplash_sample/bloc/search_image/search_image_state.dart';
 import 'package:unsplash_sample/key.dart';
 import 'package:unsplash_sample/model/photo_model.dart';

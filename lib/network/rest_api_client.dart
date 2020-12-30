@@ -5,7 +5,6 @@ import 'package:unsplash_sample/model/service_response.dart';
 import 'package:unsplash_sample/network/i_client.dart';
 
 
-
 class RestApi extends IClient{
 
   @override

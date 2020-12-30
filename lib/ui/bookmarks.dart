@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:unsplash_sample/model/bookmark_images.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 

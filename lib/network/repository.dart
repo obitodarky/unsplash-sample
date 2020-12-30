@@ -10,8 +10,8 @@ import 'package:unsplash_sample/network/service_response.dart';
 class PhotoRestApi extends IClient{
 
   @override
-  Future<MappedNetworkServiceResponse<T>> getAsync<T>(String url) async {
-    Response response = await Dio().get(url);
+  Future<MappedNetworkServiceResponse<T>> getAsync<T>(String url, Map<String, dynamic> queryParams) async {
+    Response response = await Dio().get(url, queryParameters: queryParams);
     return await processResponse<T>(response);
   }
 

@@ -24,14 +24,14 @@ class ImageSearchEvent{
       imageListData = currentState.photos;
     }
     try{
-      List<Photo> tempImageListData = await _apiMethods.getResponseFromUrl(ApiUrls.SEARCH_IMAGE,{
+      List<Photo> tempImageListData = await _apiMethods.getSearchedImages(ApiUrls.SEARCH_IMAGE,{
         "client_id": ApiKey.CLIENT_ID,
         "page": _page,
         "query": query,
       } );
       imageListData.addAll(tempImageListData);
       bloc.isFetching = false;
-      return SearchImageLoaded(imageListData, _page);
+      return SearchImageLoaded(tempImageListData, _page);
     } catch(error,stacktrace) {
       print("$error $stacktrace");
       return SearchImageError();

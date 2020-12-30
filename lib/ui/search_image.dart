@@ -156,6 +156,7 @@ class ImageSearch extends SearchDelegate<Photo> {
   Widget buildResults(BuildContext context) {
     _bloc.add(ImageSearchEvent(0, query));
 
+    print(query);
     return BlocBuilder<ImageBloc, SearchImageListState>(
       cubit: _bloc,
       builder: (BuildContext context, SearchImageListState state) {

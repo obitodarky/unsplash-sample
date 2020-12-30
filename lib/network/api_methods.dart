@@ -20,7 +20,6 @@ class GetImageList extends ApiMethods{
     var result = await _iClient.getAsync(url, queryParam);
     if(result.networkServiceResponse.success){
       print(result.mappedResult);
-
       List<Photo> res = List<Photo>.from(result.mappedResult.map<Photo>((e) => Photo.fromJson(e))).toList();
       return res;
     }
@@ -31,7 +30,7 @@ class GetImageList extends ApiMethods{
   Future<List<Photo>> getSearchedImages(String url, Map<String, dynamic> queryParam) async {
     var result = await _iClient.getAsync(url, queryParam);
     if(result.networkServiceResponse.success){
-      List<Photo> res = List.from(result.mappedResult.map((e) => Photo.fromJson(e))).toList();
+      List<Photo> res = List<Photo>.from(result.mappedResult['results'].map((e) => Photo.fromJson(e))).toList();
       return res;
     }
     throw Exception(result.networkServiceResponse.message);

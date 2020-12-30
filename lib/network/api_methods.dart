@@ -18,7 +18,6 @@ class GetImageList extends ApiMethods{
   Future<List<Photo>> getResponseFromUrl(String url, Map<String, dynamic> queryParam) async {
     var result = await _iClient.getAsync(url, queryParam);
     if(result.networkServiceResponse.success){
-      print(result.mappedResult);
       List<Photo> res = List<Photo>.from(result.mappedResult.map<Photo>((e) => Photo.fromJson(e))).toList();
       return res;
     }

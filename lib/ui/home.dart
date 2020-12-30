@@ -1,14 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:unsplash_sample/bloc/image_list/image_list_bloc.dart';
-import 'package:unsplash_sample/bloc/image_list/index.dart';
 import 'package:unsplash_sample/bloc/search_image/index.dart';
 import 'package:unsplash_sample/model/photo_model.dart';
 import 'package:unsplash_sample/ui/bookmarks.dart';
+import 'package:unsplash_sample/ui/discover_images.dart';
 import 'package:unsplash_sample/ui/search_image.dart';
-import 'package:unsplash_sample/ui/image_info.dart';
-import 'package:hive/hive.dart';
+
 
 class Home extends StatefulWidget {
   @override
@@ -16,18 +12,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final _bloc = ImageListBloc();
-  final _scrollController = ScrollController();
+
   final _searchBloc = SearchImageBloc();
 
-
-
-  @override
-  void initState() {
-    Hive.openBox('images');
-    _bloc.add(ImageFetched(0));
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +44,7 @@ class _HomeState extends State<Home> {
         body: TabBarView(
           children: [
             //infinite list view
-
+            DiscoverImages(),
             //bookmarks
             Bookmarks(),
           ],

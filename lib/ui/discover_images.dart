@@ -1,6 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:unsplash_sample/bloc/image_list/index.dart';
+import 'package:unsplash_sample/model/photo_model.dart';
 import 'package:unsplash_sample/ui/image_info.dart';
+import 'package:unsplash_sample/widgets/card_image.dart';
 
 class DiscoverImages extends StatefulWidget {
   @override
@@ -8,7 +13,18 @@ class DiscoverImages extends StatefulWidget {
 }
 
 class _DiscoverImagesState extends State<DiscoverImages> {
+  final _bloc = ImageListBloc();
+
   final _scrollThreshold = 200.0;
+  final _scrollController = ScrollController();
+
+
+  @override
+  void initState() {
+    Hive.openBox('images');
+    _bloc.add(ImageFetched(0));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,37 +57,10 @@ class _DiscoverImagesState extends State<DiscoverImages> {
 
                 if (index >= state.photos.length) return CircularProgressIndicator();
                 Photo item = state.photos[index];
-                double displayWidth = MediaQuery.of(context).size.width;
-                double finalHeight =
-                    displayWidth / (item.width / item.height);
 
-                return InkWell(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => ImageInfoScreen(item.user.firstName, item.urls.regular, item.id)
-                    ));
-                  },
-                  child: Hero(
-                    tag: "photo${item.id}",
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: CachedNetworkImage(
-                          imageUrl: item.urls.regular,
-                          fit: BoxFit.fill,
-                          width: displayWidth,
-                          height: finalHeight,
-                          placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                          errorWidget: (context, url, error) => Icon(Icons.error),
-                          placeholderFadeInDuration: Duration(seconds: 0),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
+                return CardImage(item);
               });
         }
-
         return Center(child: Text(""));
       },
     );

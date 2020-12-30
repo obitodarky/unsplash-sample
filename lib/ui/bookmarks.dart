@@ -18,20 +18,22 @@ class Bookmarks extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: bookmarkImagesBox.listenable(),
       builder: (context, Box box, widget){
-        return Container(
-          height: 300,
-          child: ListView.builder(
-            itemCount: box.values.length,
-            itemBuilder: (context, index){
-              print(index);
-              print(bookmarkImagesBox.values);
-              final bookmark = box.getAt(index);
+        return ListView.builder(
+          itemCount: box.values.length,
+          itemBuilder: (context, index){
+            print(index);
+            print(bookmarkImagesBox.values);
+            final bookmark = box.getAt(index);
 
-              return CachedNetworkImage(
-                imageUrl: bookmark.imageUrl,
-              );
-            },
-          ),
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                child: CachedNetworkImage(
+                  imageUrl: bookmark.imageUrl,
+                ),
+              ),
+            );
+          },
         );
       }
     );

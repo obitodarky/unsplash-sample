@@ -3,16 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:unsplash_sample/model/bookmark_images.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:unsplash_sample/model/photo_model.dart';
 
 class ImageInfoScreen extends StatelessWidget {
-  final String author;
-  final String url;
-  final String id;
-  ImageInfoScreen(this.author, this.url, this.id);
+  final Photo photo;
+  ImageInfoScreen(this.photo);
   final bookmarkBox = Hive.box('images');
 
   @override
   Widget build(BuildContext context) {
+    String author = "${photo.user.firstName} ${photo.user.lastName}";
+    String imageUrl = photo.urls.regular;
+    String id = photo.id;
 
     return Scaffold(
       appBar: AppBar(
@@ -21,7 +23,7 @@ class ImageInfoScreen extends StatelessWidget {
           ValueListenableBuilder(
             valueListenable: bookmarkBox.listenable(),
             builder: (context, Box box, child){
-              final newBookmark = BookmarkImages(url, author, id);
+              final newBookmark = BookmarkImages(imageUrl, author, id);
               bool isBookmarked = box.values.contains(newBookmark);
 
               return IconButton(
@@ -43,7 +45,7 @@ class ImageInfoScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: CachedNetworkImage(
-          imageUrl: url,
+          imageUrl: imageUrl,
           fit: BoxFit.fill,
           placeholder: (context, url) => Center(child: CircularProgressIndicator()),
           errorWidget: (context, url, error) => Icon(Icons.error),

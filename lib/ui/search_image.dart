@@ -1,10 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unsplash_sample/bloc/search_image/index.dart';
 import 'package:unsplash_sample/bloc/search_image/search_image_bloc.dart';
 import 'package:unsplash_sample/model/photo_model.dart';
-import 'package:unsplash_sample/ui/image_info.dart';
+import 'package:unsplash_sample/widgets/card_image.dart';
 
 class ImageSearch extends SearchDelegate<Photo> {
   final _bloc;
@@ -57,34 +56,8 @@ class ImageSearch extends SearchDelegate<Photo> {
 
               if (index >= state.photos.length) return CircularProgressIndicator();
               Photo item = state.photos[index];
-              double displayWidth = MediaQuery.of(context).size.width;
-              double finalHeight =
-                  displayWidth / (item.width / item.height);
 
-              return InkWell(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => ImageInfoScreen(item.user.firstName, item.urls.regular, item.id)
-                  ));
-                },
-                child: Hero(
-                  tag: "photo${item.id}",
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Card(
-                      child: CachedNetworkImage(
-                        imageUrl: item.urls.regular,
-                        fit: BoxFit.fill,
-                        width: displayWidth,
-                        height: finalHeight,
-                        placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
-                        placeholderFadeInDuration: Duration(seconds: 0),
-                      ),
-                    ),
-                  ),
-                ),
-              );
+              return CardImage(item);
             },
           );
         }

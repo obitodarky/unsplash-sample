@@ -21,10 +21,10 @@ class PhotoRestApi extends IClient{
       if (!((response.statusCode < HttpStatus.ok) ||
           (response.statusCode >= HttpStatus.multipleChoices) ||
           (response.data == null))) { //response.data instead of response.body
-        var resultClass = await compute(jsonParserIsolate, response.data);
+
 
         return MappedNetworkServiceResponse<T>(
-            mappedResult: resultClass,
+            mappedResult: response.data,
             networkServiceResponse: NetworkServiceResponse<T>(success: true));
       } else {
         var errorResponse = response.data;
@@ -44,6 +44,7 @@ class PhotoRestApi extends IClient{
   }
 
   static Future<Map<String, dynamic>> jsonParserIsolate(dynamic res) async {
+    print(res);
     return jsonDecode(res);
   }
 

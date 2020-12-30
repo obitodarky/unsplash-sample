@@ -12,15 +12,13 @@ class Bookmarks extends StatelessWidget {
 
   Widget _imageListView(){
     final bookmarkImagesBox = Hive.box('images');
-    print(bookmarkImagesBox.values.length);
+
     return ValueListenableBuilder(
       valueListenable: bookmarkImagesBox.listenable(),
       builder: (context, Box box, widget){
         return ListView.builder(
           itemCount: box.values.length,
           itemBuilder: (context, index){
-            print(index);
-            print(bookmarkImagesBox.values);
             final bookmark = box.getAt(index);
 
             return Padding(

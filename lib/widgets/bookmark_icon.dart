@@ -25,24 +25,24 @@ class BookMarkIcon extends StatelessWidget {
 
           return IconButton(
             icon: isBookmarked ? Icon(Icons.bookmark, size: iconSize, color: iconColor,) : Icon(Icons.bookmark_border, size: iconSize, color: iconColor,),
-            onPressed: () => changeBookmarkValue(box, newBookmark),
+            onPressed: () => _changeBookmarkValue(box, newBookmark),
           );
         }
     );
   }
 
-  void addBookmark(BookmarkImages image){
+  void _addBookmark(BookmarkImages image){
     if(!bookmarkBox.values.contains(image)){
       bookmarkBox.add(image);
     }
   }
 
-  void changeBookmarkValue(Box box, BookmarkImages newBookmark){
+  void _changeBookmarkValue(Box box, BookmarkImages newBookmark){
     if(box.values.contains(newBookmark)){
       bookmarkBox.deleteAt(bookmarkBox.values.toList().indexWhere((element) => element == newBookmark));
       return;
     }
-    addBookmark(newBookmark);
+    _addBookmark(newBookmark);
   }
 
 }

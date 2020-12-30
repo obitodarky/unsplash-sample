@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:unsplash_sample/model/bookmark_images.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:unsplash_sample/model/photo_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ImageInfoScreen extends StatelessWidget {
   final Photo photo;
@@ -20,25 +21,8 @@ class ImageInfoScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("By: $author"),
         actions: [
-          ValueListenableBuilder(
-            valueListenable: bookmarkBox.listenable(),
-            builder: (context, Box box, child){
-              final newBookmark = BookmarkImages(imageUrl, author, id);
-              bool isBookmarked = box.values.contains(newBookmark);
-
-              return IconButton(
-                icon: isBookmarked ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
-                onPressed: (){
-
-                  if(box.values.contains(newBookmark)){
-                    bookmarkBox.deleteAt(bookmarkBox.values.toList().indexWhere((element) => element == newBookmark));
-                    return;
-                  }
-                  addBookmark(newBookmark);
-                },
-              );
-            }
-          )
+          _urlIcon(imageUrl),
+          _bookmarkIcon(bookmarkBox, imageUrl, author, id),
         ],
       ),
       body: Padding(
@@ -54,9 +38,47 @@ class ImageInfoScreen extends StatelessWidget {
     );
   }
 
-  void addBookmark(BookmarkImages image){
+  void _addBookmark(BookmarkImages image){
     if(!bookmarkBox.values.contains(image)){
       bookmarkBox.add(image);
     }
+  }
+
+  Widget _bookmarkIcon(Box bookmarkBox, String imageUrl, String author, String id){
+    return ValueListenableBuilder(
+        valueListenable: bookmarkBox.listenable(),
+        builder: (context, Box box, child){
+          final newBookmark = BookmarkImages(imageUrl, author, id);
+          bool isBookmarked = box.values.contains(newBookmark);
+
+          return IconButton(
+            icon: isBookmarked ? Icon(Icons.bookmark) : Icon(Icons.bookmark_border),
+            onPressed: (){
+
+              if(box.values.contains(newBookmark)){
+                bookmarkBox.deleteAt(bookmarkBox.values.toList().indexWhere((element) => element == newBookmark));
+                return;
+              }
+              _addBookmark(newBookmark);
+            },
+          );
+        }
+    );
+  }
+
+  Widget _urlIcon(String url){
+    return IconButton(
+      icon: Icon(Icons.open_in_browser),
+      onPressed: () => _launchUrl(url),
+    );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+
   }
 }

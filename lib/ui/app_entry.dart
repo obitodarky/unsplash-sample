@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:unsplash_sample/provider/image_list.dart';
 import 'package:unsplash_sample/ui/home.dart';
 
 class EntryWidget extends StatelessWidget {
@@ -6,7 +8,14 @@ class EntryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Home(),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ImageListProvider>(
+            create: (_) => ImageListProvider(),
+          ),
+        ],
+        child: Home()
+      ),
     );
   }
 }

@@ -4,7 +4,6 @@ import 'package:unsplash_sample/network/rest_api_client.dart';
 
 abstract class ApiMethods {
   Future<List<Photo>> getResponseFromUrl(String url, Map<String, dynamic> queryParams);
-  Future<List<Photo>> getSearchedImages(String url, Map<String, dynamic> queryParam);
 }
 
 class GetImageList extends ApiMethods{
@@ -19,16 +18,6 @@ class GetImageList extends ApiMethods{
     var result = await _iClient.getAsync(url, queryParam);
     if(result.networkServiceResponse.success){
       List<Photo> res = List<Photo>.from(result.mappedResult.map<Photo>((e) => Photo.fromJson(e))).toList();
-      return res;
-    }
-    throw Exception(result.networkServiceResponse.message);
-  }
-
-  @override
-  Future<List<Photo>> getSearchedImages(String url, Map<String, dynamic> queryParam) async {
-    var result = await _iClient.getAsync(url, queryParam);
-    if(result.networkServiceResponse.success){
-      List<Photo> res = List<Photo>.from(result.mappedResult['results'].map((e) => Photo.fromJson(e))).toList();
       return res;
     }
     throw Exception(result.networkServiceResponse.message);

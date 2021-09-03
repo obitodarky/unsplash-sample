@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:unsplash_sample/model/service_response.dart';
@@ -11,7 +10,7 @@ class RestApi extends IClient{
   Future<MappedNetworkServiceResponse<T>> getAsync<T>(String url, Map<String, dynamic> queryParams) async {
     Response response = await Dio().get(url, queryParameters: queryParams);
 
-    return await processResponse<T>(response);
+    return await processResponse(response);
   }
 
   Future<MappedNetworkServiceResponse<T>> processResponse<T>(
@@ -40,11 +39,6 @@ class RestApi extends IClient{
               message:
               "(${response.statusCode}) Can't reach the servers, \n Please check your internet connection."));
     }
-  }
-
-  static Future<Map<String, dynamic>> jsonParserIsolate(dynamic res) async {
-    print(res);
-    return jsonDecode(res);
   }
 
 }

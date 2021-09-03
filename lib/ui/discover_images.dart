@@ -1,65 +1,108 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
-import 'package:unsplash_sample/bloc/image_list/index.dart';
+import 'package:flutter/rendering.dart';
+import 'package:unsplash_sample/bloc/api_bloc.dart';
+import 'package:unsplash_sample/bloc/image_list_state.dart';
 import 'package:unsplash_sample/model/photo_model.dart';
+import 'package:unsplash_sample/provider/image_list.dart';
 import 'package:unsplash_sample/widgets/card_image.dart';
 
 class DiscoverImages extends StatefulWidget {
+  final ImageListProvider imageListProvider;
+
+  const DiscoverImages({Key key, this.imageListProvider}) : super(key: key);
+
   @override
   _DiscoverImagesState createState() => _DiscoverImagesState();
 }
 
 class _DiscoverImagesState extends State<DiscoverImages> {
-  final _bloc = ImageListBloc();
-
-  final _scrollThreshold = 200.0;
-  final _scrollController = ScrollController();
+  final _bloc = ApiBloc();
+  final _scrollController = ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
+  int count = 1;
+  List<int> top = [];
+  List<int> bottom = List<int>.generate(10, (i) => i + 1);
 
 
   @override
   void initState() {
-    Hive.openBox('images');
-    _bloc.add(ImageFetched(0));
     super.initState();
+    getImage();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ImageListBloc, ImageListState>(
-      cubit: _bloc,
-      builder: (buildContext, state) {
-        if (state is ImageError)
-          return Center(
-            child: Text("error"),
-          );
-        if (state is InitialPhotoListState)
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        if (state is ImageLoaded) {
-          return ListView.builder(
-              itemCount: state.photos.length + 1,
-              controller: _scrollController,
-              itemBuilder: (buildContext, index) {
-                _scrollController.addListener((){
-                  final maxScroll = _scrollController.position.maxScrollExtent;
-                  final currentScroll = _scrollController.position.pixels;
-                  if (maxScroll - currentScroll <= _scrollThreshold && !_bloc.isFetching && index == state.photos.length) {
-                    if(_bloc.state is ImageLoaded){
-                      _bloc.add(ImageFetched((_bloc.state as ImageLoaded).page + 1));
-                    }
-                  }
-                });
-
-                if (index >= state.photos.length) return CircularProgressIndicator();
-                Photo item = state.photos[index];
-
-                return CardImage(item);
-              });
-        }
-        return Center(child: Text(""));
-      },
-    );
+    const Key centerKey = ValueKey('second-sliver-list');
+    return NotificationListener<ScrollNotification>(
+        onNotification: (t){
+          if(t is UserScrollNotification){
+            if(_scrollController.position.pixels <= 100 && _scrollController.position.userScrollDirection == ScrollDirection.forward){
+              print('Getting top image');
+              getImageTop();
+            } else if(_scrollController.position.userScrollDirection == ScrollDirection.reverse){
+              final maxScroll = _scrollController.position.maxScrollExtent;
+              final currentScroll = _scrollController.position.pixels;
+              if(maxScroll - currentScroll <= 300){
+                getImageBottom();
+              }
+            }
+            return true;
+          }
+          return false;
+        },
+        child: CustomScrollView(
+          controller: _scrollController,
+          center: centerKey,
+          slivers: <Widget>[
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      Photo item = widget.imageListProvider.topList[index];
+                      return CardImage(item);
+                },
+                childCount: widget.imageListProvider.topList.length,
+              ),
+            ),
+            SliverList(
+              key: centerKey,
+              delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      Photo item = widget.imageListProvider.bottomList[index];
+                      return CardImage(item);
+                },
+                childCount: widget.imageListProvider.bottomList.length,
+              ),
+            ),
+          ],
+        ),
+      );
   }
+
+  getImage() async {
+    ImageListState state = await _bloc.getImages(5);
+    if(state is ImageLoaded){
+      widget.imageListProvider.addToBottomList(state.photos);
+      widget.imageListProvider.updateBottomPage(state.page);
+      widget.imageListProvider.updateTopPage(state.page);
+    }
+  }
+
+  Future<void> getImageTop() async {
+    if(widget.imageListProvider.currentTopPage != 0 ){
+      ImageListState state = await _bloc.getImages(widget.imageListProvider.currentTopPage - 1);
+      if(state is ImageLoaded){
+        widget.imageListProvider.addToTopList(state.photos);
+        widget.imageListProvider.updateTopPage(state.page);
+      }
+    }
+  }
+
+  getImageBottom() async {
+    ImageListState state = await _bloc.getImages(widget.imageListProvider.currentBottomPage + 1);
+    if(state is ImageLoaded){
+      widget.imageListProvider.addToBottomList(state.photos);
+      widget.imageListProvider.updateBottomPage(state.page);
+    }
+  }
+
 }

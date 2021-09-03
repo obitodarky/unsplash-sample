@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:unsplash_sample/bloc/search_image/index.dart';
-import 'package:unsplash_sample/model/photo_model.dart';
-import 'package:unsplash_sample/ui/bookmarks.dart';
+import 'package:provider/provider.dart';
+import 'package:unsplash_sample/provider/image_list.dart';
 import 'package:unsplash_sample/ui/discover_images.dart';
-import 'package:unsplash_sample/ui/search_image.dart';
 
 
 class Home extends StatefulWidget {
@@ -12,44 +10,47 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
-  final _searchBloc = SearchImageBloc();
-
+  int _page = 0;
+  ImageListProvider imageListProvider;
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          bottom: TabBar(
-            tabs: [
-              Tab(icon: Text("Discover")),
-              Tab(icon: Text("Bookmarks")),
-            ],
-          ),
-          title: Text('Unsplash demo'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () async {
-                Photo selected = await showSearch<Photo>(
-                  context: context,
-                  delegate: ImageSearch(_searchBloc),
-                );
+    imageListProvider = Provider.of<ImageListProvider>(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Unsplash demo'),
+        actions: [
+          Text("Jump to Page:"),
+          Container(
+            width: MediaQuery.of(context).size.width / 6,
+            padding: EdgeInsets.all(8),
+            color: Colors.white,
+            child: TextField(
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: "0",
+              ),
+              onChanged: (value){
+                ////print("${int.tryParse(value)} tryparse");
+                if(int.tryParse(value) != null){
+                  setState(() {
+                    ////print(value);
+                    _page = int.parse(value);
+
+                  });
+                }
               },
-            )
-          ],
-        ),
-        body: TabBarView(
-          children: [
-            //infinite list view
-            DiscoverImages(),
-            //bookmarks
-            Bookmarks(),
-          ],
-        ),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.forward),
+            onPressed: () {
+              //_bloc.add(ImageFetched(_page, jumpToPage: true));
+            },
+          )
+        ],
       ),
+      body: DiscoverImages(imageListProvider: imageListProvider,),
     );
   }
 }

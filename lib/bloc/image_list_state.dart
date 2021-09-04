@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:unsplash_sample/model/photo_model.dart';
 
-abstract class ImageListState {
-  const ImageListState();
-}
+abstract class ImageListState {}
 
-class InitialPhotoListState extends ImageListState {}
 
 class ImageError extends ImageListState {}
 

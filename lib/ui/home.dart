@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:unsplash_sample/bloc/api_bloc.dart';
+import 'package:unsplash_sample/bloc/image_list_state.dart';
 import 'package:unsplash_sample/provider/image_list.dart';
 import 'package:unsplash_sample/ui/discover_images.dart';
 
@@ -11,6 +13,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _page = 0;
+  ApiBloc _bloc = ApiBloc();
   ImageListProvider imageListProvider;
 
   @override
@@ -20,10 +23,9 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text('Unsplash demo'),
         actions: [
-          Text("Jump to Page:"),
           Container(
             width: MediaQuery.of(context).size.width / 6,
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             color: Colors.white,
             child: TextField(
               keyboardType: TextInputType.number,
@@ -33,11 +35,7 @@ class _HomeState extends State<Home> {
               onChanged: (value){
                 ////print("${int.tryParse(value)} tryparse");
                 if(int.tryParse(value) != null){
-                  setState(() {
-                    ////print(value);
-                    _page = int.parse(value);
-
-                  });
+                  _page = int.parse(value);
                 }
               },
             ),
@@ -45,7 +43,9 @@ class _HomeState extends State<Home> {
           IconButton(
             icon: Icon(Icons.forward),
             onPressed: () {
-              //_bloc.add(ImageFetched(_page, jumpToPage: true));
+              if(_page != null){
+                jumpToPage(_page);
+              }
             },
           )
         ],
@@ -53,4 +53,12 @@ class _HomeState extends State<Home> {
       body: DiscoverImages(imageListProvider: imageListProvider,),
     );
   }
+
+  jumpToPage(int page) async {
+    ImageListState state = await _bloc.getImages(page);
+    if(state is ImageLoaded){
+      imageListProvider.jumpToPage(state.photos, page);
+    }
+  }
+
 }

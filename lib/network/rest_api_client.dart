@@ -16,9 +16,7 @@ class RestApi extends IClient{
   Future<MappedNetworkServiceResponse<T>> processResponse<T>(
       Response response) async {
     try {
-      if (!((response.statusCode < HttpStatus.ok) ||
-          (response.statusCode >= HttpStatus.multipleChoices) ||
-          (response.data == null))) { //response.data instead of response.body
+      if (response.data != null && response.statusCode == HttpStatus.ok) { //response.data instead of response.body
 
 
         return MappedNetworkServiceResponse<T>(

@@ -38,7 +38,16 @@ class _DiscoverImagesState extends State<DiscoverImages> {
       onNotification: (t) {
         final maxScroll = _scrollController.position.maxScrollExtent;
         final currentScroll = _scrollController.position.pixels;
-        if (t is UserScrollNotification) {
+        if(t is ScrollStartNotification){
+          print("scroll start");
+          if(_scrollController.position.pixels <= 100 &&
+              _scrollController.position.userScrollDirection ==
+                  ScrollDirection.forward && !_imageListProvider.isFetching){
+            getImageTop();
+          }
+        }
+        else if (t is UserScrollNotification) {
+          print("user scroll");
           if (_scrollController.position.pixels <= 100 &&
               _scrollController.position.userScrollDirection ==
                   ScrollDirection.forward && !_imageListProvider.isFetching) {
@@ -46,6 +55,7 @@ class _DiscoverImagesState extends State<DiscoverImages> {
           }
           return true;
         } else if (t is ScrollUpdateNotification) {
+          print("scroll update");
           if (maxScroll - currentScroll <= _scrollThreshold &&
               _scrollController.position.userScrollDirection ==
                   ScrollDirection.reverse && !_imageListProvider.isFetching) {
